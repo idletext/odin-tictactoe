@@ -7,9 +7,10 @@ const gameLogic = (function(){
     function gameRound() {
         let roundCount = 0;
 
+        const getRound = () => roundCount;
         const newRound = () => roundCount++;
 
-        return {newRound};
+        return {newRound, getRound};
     };
     
     function makeMove (board, row, col, player ){
@@ -91,9 +92,8 @@ const gamePlay = (function() {
 })();
 
 // Tests (TO BE REMOVED)
-const steve = playerModule.makePlayer("steve");
-steve.giveScore()
-console.log(steve.getScore());
+
+
 
 
 
