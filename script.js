@@ -3,6 +3,14 @@ const gameLogic = (function(){
     function makeBoard (size) {
         return Array.from({length : size}, () => Array(size).fill(null));
     };
+
+    function gameRound() {
+        let roundCount = 0;
+
+        const newRound = () => roundCount++;
+
+        return {newRound};
+    };
     
     function makeMove (board, row, col, player ){
         if (!board[row][col]) {
@@ -31,7 +39,7 @@ const gameLogic = (function(){
 
     function checkTie (board) {
 
-    return board.every(rows => rows.every(elem => elem !== null)) 
+        return board.every(rows => rows.every(elem => elem !== null)) 
         
     };
 
@@ -42,7 +50,7 @@ const gameLogic = (function(){
         console.log ( `${losePlayer}'s Score: ${losePlayer.getScore()}`);
     };
 
-    return{ makeBoard, makeMove, checkWin, checkTie, gameFinish }
+    return { makeBoard, makeMove, checkWin, checkTie, gameFinish, gameRound}
 
 })();
 
@@ -82,7 +90,7 @@ const gamePlay = (function() {
     
 })();
 
-
+// Tests (TO BE REMOVED)
 const steve = playerModule.makePlayer("steve");
 steve.giveScore()
 console.log(steve.getScore());
