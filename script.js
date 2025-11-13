@@ -35,7 +35,14 @@ const gameLogic = (function(){
         
     };
 
-    return{ makeBoard, makeMove, checkWin, checkTie}
+    function gameFinish (winPlayer, losePlayer) {
+        console.log ("game is finished!");
+        consolg.log (`${winPlayer} wins!`);
+        console.log ( `${winPlayer}'s Score: ${winPlayer.getScore()}`);
+        console.log ( `${losePlayer}'s Score: ${losePlayer.getScore()}`);
+    };
+
+    return{ makeBoard, makeMove, checkWin, checkTie, gameFinish }
 
 })();
 
@@ -65,11 +72,20 @@ const stats =  (function(){
 
 })();
 
+const screenController = ( function(){
 
-const gameRound = (function() {
+})();
 
-})
 
+const gamePlay = (function() {
+    
+    
+})();
+
+
+const steve = playerModule.makePlayer("steve");
+steve.giveScore()
+console.log(steve.getScore());
 
 
 
