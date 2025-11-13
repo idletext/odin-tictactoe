@@ -7,8 +7,9 @@ const gameLogic = (function(){
     function makeMove (board, row, col, player ){
         if (!board[row][col]) {
             board[row][col] = player;
-            
-        }    
+            return true;
+        };
+        return false;
     };
     
     function checkWin (board, player) {
@@ -63,6 +64,11 @@ const stats =  (function(){
 
 
 })();
+
+
+const gameRound = (function() {
+
+})
 
 
 
