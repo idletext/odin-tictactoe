@@ -43,12 +43,13 @@ const gameLogic = (function(){
         return {newRound, getRound};
     };
     
-    function makeMove (board, row, col, playerSymbol ){
+    function applyMove (board, row, col, playerSymbol ){
         if (!board[row][col]) {
             board[row][col] = playerSymbol;
             return true;
-        };
-        return false;
+        } else {
+            return false;
+        }
     };
     
     function checkWin (board, player) {
@@ -87,26 +88,33 @@ const gameLogic = (function(){
         console.log(board[2].toString());
     };
 
-    async function playerMove(board, player) { 
-        console.log("player 1 'x' you're up!")
-        const playerInput = await nodejs.input().ask("To pick, enter two numbers that represents 'row' and 'col' (ex: 3 5 ):");
+    async function playerMove(board, player, input) { 
 
-        const parts = playerInput.split(" ").map(Number);
+        const parts = input.split(" ").map(Number);
 
         if ( parts.length !== 2 || parts.some( n => isNaN(n) ) ) {
 
             console.log("Invalid input. Try again." );
-            return playerMove(); // I believe this is called a recursion?
+            return false(); // I believe this is called a recursion?
         }
 
         const [x, y] = parts;
-        gameLogic.makeMove(board, x, y, player.getSymbol());
+        const apply = gameLogic.applyMove(board, x, y, player.getSymbol());
+
+        if (apply === true) {
+            console.log("Input Success!");
+        }
+
+        if (apply === false) {
+            console.log("spot is taken! Enter number again!");
+            return false;
+        }
 
     };
 
     return { 
         makeBoard, 
-        makeMove, 
+        applyMove, 
         checkWin, 
         checkTie, 
         gameFinish, 
@@ -145,50 +153,79 @@ const stats =  (function(){
 // Console Game Play Testing
 const gamePlay = (async function() {
 
-    // const prompt = nodejs.input();
-    let thisBoard = gameLogic.makeBoard(3);
-    const thisRound = gameLogic.gameRound();
+    const playerOneName = await nodejs.input().ask("player 1, what is your name?");
 
-    const playerOneInput = await nodejs.input().ask("player 1, what is your name?");
-
-    const playerOne = playerModule.makePlayer(playerOneInput);
+    const playerOne = playerModule.makePlayer(playerOneName);
     playerOne.giveSymbol('x')
     console.log(`Hello ${playerOne.getName()}!`)
 
-    const playerTwoInput = await nodejs.input().ask("player 2, what is your name?");
+    const playerTwoName = await nodejs.input().ask("player 2, what is your name?");
     // nodejs.input().close()
 
-    const playerTwo = playerModule.makePlayer(playerTwoInput);
+    const playerTwo = playerModule.makePlayer(playerTwoName);
     playerTwo.giveSymbol('o')
     console.log(`Hello ${playerTwo.getName()}!`)
 
     console.log("let's start the game!")
 
-    gameLogic.renderBoard(thisBoard);
+
+
+    let thisBoard = gameLogic.makeBoard(3);
     
-    //playerMove
-
-    // function checkState(board){
-    //     if (board.checkTie())
-    // }
-
-    await gameLogic.playerMove(thisBoard, playerOne);
-
-    gameLogic.renderBoard(thisBoard)
-
+    moveloop(playerOne, playerTwo)
     
+    const thisRound = gameLogic.gameRound();
 
-    // move loop
-    // for(i = 0; i < thisBoard.length * 3; i++) {
-    //     renderBoard(thisBoard)
-    //     console.log("Player 1 your're up")
-    //     console.log('Pick a side eg. "r1"')    
-    // thisBoard = [ ["x", "x", "x"], ["x", "x", "x"], ["x", "x", "x"] ];
+
+    async function playerMoveInput(player, board) {
+        console.log("player 1 'x' you're up!")
+        const playerInput = await nodejs.input().ask("To pick, enter two numbers that represents 'row' and 'col' (ex: 3 5 ):");
+
+        const check = await gameLogic.playerMove(board, player, playerInput);
+
+        if (check === false) playerMoveInput(player); //repeat loop
+
+        if (gameLogic.checkTie(board) === true){
+            thisRound.newRound
+            console.log("it's a tie! Next Round!")
+            return false;
+          };
+
+          if(gameLogic.checkWin(board) === true){
+            playerOne.giveScore()
+            console.log(`Score to ${player}!`)
+            console.log(playerOne.getScore())
+            console.log(playerTwo.getScore())
+            thisRound.newRound
+            console.log("Next Round!")
+            return false;
+          };
+    };
+
+    function moveLoop(player1, player2, board) {
+        for(i = 0; i < thisBoard.length * 3; i++) {
+
+          playerMoveInput(player1, board);
+          
+          playerMoveInput(player2, board);
+
+          if (playerMoveInput === false){
+            return false;
+          }
+    };
+
+    };
+
+
+    function round() {
+
+    }
+
+
+
+ 
     
-    // };
-
-    console.log("gameFinished");
-        
+  
 })();
 
 // Tests (TO BE REMOVED)
