@@ -63,7 +63,7 @@ const gameLogic = (function(){
             if ( board.every( (row) => row[col] === player ) ) return true;
         };
         //check diagonals
-        const mainDiagonal = board.every( (row, i => row[i] === player) )
+        const mainDiagonal = board.every( (row, i) => (row[i] === player) )
         const antiDiagonal = board.every( (row, i) => (row - 1 - i) === player )
 
         return mainDiagonal || antiDiagonal;
@@ -150,9 +150,16 @@ const stats =  (function(){
 })();
 
 
-// Console Game Play Testing
-const gamePlay = (async function() {
+const info = (function(){
 
+})();
+
+
+// round
+const gamePlay = (async function() {
+    
+
+    // Ask Player's information
     const playerOneName = await nodejs.input().ask("player 1, what is your name?");
 
     const playerOne = playerModule.makePlayer(playerOneName);
@@ -160,72 +167,71 @@ const gamePlay = (async function() {
     console.log(`Hello ${playerOne.getName()}!`)
 
     const playerTwoName = await nodejs.input().ask("player 2, what is your name?");
-    // nodejs.input().close()
 
     const playerTwo = playerModule.makePlayer(playerTwoName);
     playerTwo.giveSymbol('o')
     console.log(`Hello ${playerTwo.getName()}!`)
 
-    console.log("let's start the game!")
-
-
-
-    let thisBoard = gameLogic.makeBoard(3);
-    
-    moveloop(playerOne, playerTwo)
-    
+     //start round
     const thisRound = gameLogic.gameRound();
+    thisRound.newRound();
+    round()
 
+    function round () {
 
-    async function playerMoveInput(player, board) {
-        console.log("player 1 'x' you're up!")
-        const playerInput = await nodejs.input().ask("To pick, enter two numbers that represents 'row' and 'col' (ex: 3 5 ):");
+    //Start Round
+    // let thisBoard = gameLogic.makeBoard(3);
+    let thisBoard = [ ["o", "o", "x"], ["x", null, "x"], ["o", "o", null] ];
+    
+    console.log("let's start the game!")
+    console.log(`round ${thisRound.getRound()}`)
+    
+    
+    moveLoop(playerOne, playerTwo, thisBoard);
+    
+    
+    function playerMoveInput(player, board, playerInput) {
 
-        const check = await gameLogic.playerMove(board, player, playerInput);
+        const check = gameLogic.playerMove(board, player, playerInput);
 
-        if (check === false) playerMoveInput(player); //repeat loop
+        if (check === false) playerMoveInput(player.getSymbol()); //repeat loop
 
-        if (gameLogic.checkTie(board) === true){
-            thisRound.newRound
+        if (gameLogic.checkTie(board, player) === true){
+            thisRound.newRound()
             console.log("it's a tie! Next Round!")
-            return false;
+            return true;
           };
 
-          if(gameLogic.checkWin(board) === true){
+        if (gameLogic.checkWin(board, player.getSymbol()) === true){
             playerOne.giveScore()
-            console.log(`Score to ${player}!`)
+            console.log(`Score to ${player.getName()}!`)
             console.log(playerOne.getScore())
             console.log(playerTwo.getScore())
-            thisRound.newRound
+            if (thisRound)
+            thisRound.newRound()
             console.log("Next Round!")
-            return false;
+            round();
           };
     };
 
-    function moveLoop(player1, player2, board) {
+    async function moveLoop(player1, player2, board) {
         for(i = 0; i < thisBoard.length * 3; i++) {
-
-          playerMoveInput(player1, board);
-          
-          playerMoveInput(player2, board);
-
-          if (playerMoveInput === false){
-            return false;
-          }
+        
+        gameLogic.renderBoard(thisBoard);
+        console.log(`${player1.getName()} ${player1.getSymbol()} you're up!`);
+        const playerInput = await nodejs.input().ask("To pick, enter two numbers that represents 'row' and 'col' (ex: 0 2 ):");
+        playerMoveInput(player1, board, playerInput);
+        
+        gameLogic.renderBoard(thisBoard);
+        console.log(`${player2.getName()} ${player2.getSymbol()} you're up!`);
+        const playerInput2 = await nodejs.input().ask("To pick, enter two numbers that represents 'row' and 'col' (ex: 0 2 ):");
+        playerMoveInput(player2, board, playerInput2);
+        
+        };
     };
 
-    };
+    };//Round
 
-
-    function round() {
-
-    }
-
-
-
- 
-    
-  
 })();
 
 // Tests (TO BE REMOVED)
@@ -233,6 +239,8 @@ const gamePlay = (async function() {
 // [ ["x", "x", "x"], ["x", "x", "x"], ["x", "x", "x"] ]
 
 // [ ["x", "x", "x"], ["x", "x", "x"], ["x", "x", "null"] ]
+
+// [ ["o", "o", "x"], ["x", "x", "x"], ["o", "o", "null"] ]
 
 
 
