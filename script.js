@@ -142,12 +142,12 @@ const gameLogic = (function(){
        
          };    
 
-         const round = async function(player1, player2) {
-            thisBoard = gameLogic.makeBoard(3)
-            io.shoutRound()
-            let running = true;
+    const round = async function(player1, player2) {
+        thisBoard = gameLogic.makeBoard(3)
+        io.shoutRound()
+        let running = true;
     
-            while(running){
+        while(running){
     
             await gameLogic.playerMove(thisBoard, player1);
     
@@ -163,7 +163,7 @@ const gameLogic = (function(){
     
         };
     
-        };
+    };
 
     return { 
         makeBoard, 
